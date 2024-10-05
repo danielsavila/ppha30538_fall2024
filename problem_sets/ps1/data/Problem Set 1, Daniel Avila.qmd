@@ -14,7 +14,7 @@ your initials to indicate your agreement: **DA**
 2. “I have uploaded the names of anyone I worked with on the problem set here” **DA**
 (1 point)
 
-3. Late coins used this pset: **0** Late coins left after submission: **4**
+3. Late coins used this pset: **1** Late coins left after submission: **3**
 
 4. Knit your ps1.qmd to make ps1.pdf.
 • The PDF should not be more than 25 pages. Use head() and re-size figures when
@@ -166,26 +166,70 @@ or less likely to have paid tickets?
 df_datetime["ticket_queue_date"] = pd.to_datetime(df_datetime["ticket_queue_date"])
 paid = df_datetime[df_datetime["ticket_queue"] == "Paid"]
 paid["difference"] = paid["ticket_queue_date"] - paid["issue_date"]
-paid_gb = pd.DataFrame(paid.groupby("vehicle_make"))
-paid_gb = paid_gb.sort_values(by = "difference", ascending = False)
-paid_gb["difference"].describe()
+paid_gb = paid.groupby("vehicle_make")
+dif_mean = paid_gb["difference"].mean().reset_index()
+dif_mean["difference"] = dif_mean["difference"].apply(lambda x: x.total_seconds())
+
+alt.Chart(dif_mean).mark_bar().encode(
+    alt.X("difference"),
+    alt.Y("vehicle_make")
+)
 ```
+
+Individuals who have older vehicles are more likely to have purchased that car second hand which can be an indicator for less disposable income for durables such as cars. If the individual has less disposable income, then theroetically they would also have less income to pay their tickets. So older cars are more likely to have more tickets, because tickets accumulate when they cannot be paid. 
 
 Vehicles 
 
 3. Make a plot for the number of tickets issued over time by adapting the Filled Step Chart
 example online.
+```{python}
+#had to find a pd.Grouper because I had too many rows in my dataset without it.
+#found via chatgpt
 
+grouped_date = df.groupby(pd.Grouper(key="issue_date", freq="ME")).count().reset_index()
+
+alt.Chart(grouped_date).mark_area(
+    color="lightblue",
+    interpolate='step-after',
+    line=True
+    ).encode(
+    alt.X("issue_date"),
+    alt.Y("vehicle_make")
+)
+```
 
 4. Make a plot for the number of tickets issued by month and day by adapting the Annual
 Weather Heatmap example online.
 
+```{python}
+alt.Chart(grouped_date).mark_rect().encode(
+    x=alt.X("date(issue_date)", axis=alt.Axis(format="%e", labelAngle=0)),
+    y=alt.Y("month(issue_date)", title="Month"),
+    color=alt.Color("max(vehicle_make)", legend=alt.Legend(title=None)),
+    tooltip=[
+        alt.Tooltip("monthdate(date)", title="Date"),
+        alt.Tooltip("max(issue_date)", title="Max Temp"),
+    ],
+).configure_view(step=13, strokeWidth=0).configure_axis(domain=False)
+```
 
 5. Subset to the five most common types of violations. Make a plot for the number of
 tickets issued over time by adapting the Lasagna Plot example online.
+```{python}
+groupby = df.groupby("violation_description").count()
+groupby = groupby.nlargest(20, "ticket_number")
+
+alt.Chart(groupby, width=300, height=200).mark_rect().encode(
+    x=alt.X("issue_date"),
+    y=alt.Y("ticket_number:N"),
+)
+```
 
 6. Compare and contrast the plots you made for the prior three questions. What are the
 pros and cons of each plot?
 
+I mean these are so far off from what I know you are looking for...but the bar graph is great for showing ordered list comparisons of quantitative data. The heatmap is great for creating something of a geographic effect for  quantitative data, to identify areas of frequency. And the lasagna graph incorporates a time element to that conversation.
+
 7. Suppose that the lesson you want a reader to take away is that the enforcement of
 violations is not evenly distributed over time? Which plot is best and why?
+Yeah I wasnt able to get that from my plots. But I would think that the lasagna plot would show that best since it is acting as a heatmap, which would indicate the number of tickets per month per year. So that would give a good sense of temporal patterns. 

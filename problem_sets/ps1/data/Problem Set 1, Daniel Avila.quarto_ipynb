@@ -21,7 +21,7 @@
         "2. “I have uploaded the names of anyone I worked with on the problem set here” **DA**\n",
         "(1 point)\n",
         "\n",
-        "3. Late coins used this pset: **0** Late coins left after submission: **4**\n",
+        "3. Late coins used this pset: **1** Late coins left after submission: **3**\n",
         "\n",
         "4. Knit your ps1.qmd to make ps1.pdf.\n",
         "• The PDF should not be more than 25 pages. Use head() and re-size figures when\n",
@@ -42,7 +42,7 @@
         "\n",
         "Read in one percent sample (15 Points)\n"
       ],
-      "id": "2058754f"
+      "id": "52602f8d"
     },
     {
       "cell_type": "code",
@@ -59,7 +59,7 @@
         "df = pd.read_csv(\"parking_tickets_one_percent.csv\")\n",
         "df.head()"
       ],
-      "id": "dd8ada37",
+      "id": "7f37b61d",
       "execution_count": null,
       "outputs": []
     },
@@ -69,7 +69,7 @@
       "source": [
         "1. To help you get started, we pushed a file to the course repo called parking_tickets_one_percent.csv which gives you a one percent sample of tickets. We constructed the sample by selecting 1 ticket numbers that end in 01. How long does it take to read in this file? (Find a function to measure how long it takes the command to run. Note that everytime you run, there will be some difference in how long the code takes to run). Add an assert statement which verifies that there are 287458 rows. \n"
       ],
-      "id": "c668dc4b"
+      "id": "203ce524"
     },
     {
       "cell_type": "code",
@@ -83,7 +83,7 @@
         "\n",
         "print(end - start)"
       ],
-      "id": "34b8f481",
+      "id": "6afd412e",
       "execution_count": null,
       "outputs": []
     },
@@ -94,7 +94,7 @@
         "2. Using a function in the os library calculate how many megabytes is the CSV file? \n",
         "Using math, how large would you predict the full data set is?\n"
       ],
-      "id": "c87eff8b"
+      "id": "6d24ad1b"
     },
     {
       "cell_type": "code",
@@ -103,7 +103,7 @@
         "df_size = os.path.getsize(\"parking_tickets_one_percent.csv\")\n",
         "print(df_size / 1048576)"
       ],
-      "id": "c9e62986",
+      "id": "e83d87e4",
       "execution_count": null,
       "outputs": []
     },
@@ -113,7 +113,7 @@
       "source": [
         "print(df_size*100/1048576)"
       ],
-      "id": "71023617",
+      "id": "c8ee9d75",
       "execution_count": null,
       "outputs": []
     },
@@ -127,7 +127,7 @@
         "\n",
         "The rows in the dataset are ordered by the \"issue_date\" column. "
       ],
-      "id": "1754e0ee"
+      "id": "bf72c00f"
     },
     {
       "cell_type": "code",
@@ -146,7 +146,7 @@
         "\n",
         "check()"
       ],
-      "id": "d71341ba",
+      "id": "b89806f9",
       "execution_count": null,
       "outputs": []
     },
@@ -160,7 +160,7 @@
         "were issued in the full data in 2017? How many tickets are issued each year according\n",
         "to the ProPublica article? Do you think that there is a meaningful difference?"
       ],
-      "id": "f27f6e8c"
+      "id": "0272df9c"
     },
     {
       "cell_type": "code",
@@ -174,7 +174,7 @@
         "\n",
         "print(\"our resulting figures indicate that the ProPublica article is overestimating by nearly 130,000 tickets, or approximately .4%. However, note that their claim is for parking tickets, speeding ticktes, and other infractions, whereas our dataset is only for parking violations. Therefore I believe that the \\\"greater than 3 million\\\" claim is acceptable.\")"
       ],
-      "id": "26c8a0de",
+      "id": "30f577d2",
       "execution_count": null,
       "outputs": []
     },
@@ -186,7 +186,7 @@
         "Make a bar graph to show the frequency of these ticket types. Format the graph such\n",
         "that the violation descriptions are legible and no words are cut off.\n"
       ],
-      "id": "7c7bca5b"
+      "id": "5bb6ea53"
     },
     {
       "cell_type": "code",
@@ -197,15 +197,15 @@
         "groupby = groupby.reset_index()\n",
         "\n",
         "alt.Chart(groupby).mark_bar().encode(\n",
-        "    alt.Y(\"violation_description:N\", \n",
+        "    alt.Y(\"violation_description\", \n",
         "        axis = alt.Axis(labelFontSize = 7)),\n",
-        "    alt.X(\"ticket_number:Q\", \n",
+        "    alt.X(\"ticket_number\", \n",
         "        axis = alt.Axis(labelFontSize = 7))\n",
         ")\n",
         "\n",
         "#had inspiration from chatgpt about identifying the labelfontsize and axis variables in the y and x axis"
       ],
-      "id": "0b72edca",
+      "id": "654f42f2",
       "execution_count": null,
       "outputs": []
     },
@@ -220,32 +220,163 @@
         "data frame? Your response should take the form of a markdown table where each row\n",
         "corresponds to one of the variables in the parking tickets dataset, the first column is the\n",
         "variable name and the second column is the variable type or types. If you argue that a\n",
-        "column might be associated with than one type, explain why in writing below the table.\n",
+        "column might be associated with than one type, explain why in writing below the table.\n"
+      ],
+      "id": "6e60d6fe"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "columns = pd.DataFrame(df.columns)\n",
+        "dtype_dict = {1:\"nominal\",\n",
+        "              2: \"ordinal\",\n",
+        "              3: \"quantitative\",\n",
+        "              4: \"temporal\"}\n",
         "\n",
+        "dtypes = [2, 2, 4, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 2, 4, 2, 1, 1, 1, 1]\n",
         "\n",
+        "columns[\"dtypes\"] = dtypes\n",
+        "columns[\"dtypes\"] = columns[\"dtypes\"].map(dtype_dict)\n",
+        "\n",
+        "columns = columns.T\n",
+        "columns"
+      ],
+      "id": "f49eabc5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
         "2. Compute the fraction of time that tickets issued to each vehicle make are marked as paid.\n",
         "Show the results as a bar graph. Why do you think that some vehicle makes are more\n",
-        "or less likely to have paid tickets?\n",
+        "or less likely to have paid tickets?\n"
+      ],
+      "id": "69fdedca"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df_datetime[\"ticket_queue_date\"] = pd.to_datetime(df_datetime[\"ticket_queue_date\"])\n",
+        "paid = df_datetime[df_datetime[\"ticket_queue\"] == \"Paid\"]\n",
+        "paid[\"difference\"] = paid[\"ticket_queue_date\"] - paid[\"issue_date\"]\n",
+        "paid_gb = paid.groupby(\"vehicle_make\")\n",
+        "dif_mean = paid_gb[\"difference\"].mean().reset_index()\n",
+        "dif_mean[\"difference\"] = dif_mean[\"difference\"].apply(lambda x: x.total_seconds())\n",
         "\n",
+        "alt.Chart(dif_mean).mark_bar().encode(\n",
+        "    alt.X(\"difference\"),\n",
+        "    alt.Y(\"vehicle_make\")\n",
+        ")"
+      ],
+      "id": "984ce327",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Individuals who have older vehicles are more likely to have purchased that car second hand which can be an indicator for less disposable income for durables such as cars. If the individual has less disposable income, then theroetically they would also have less income to pay their tickets. So older cars are more likely to have more tickets, because tickets accumulate when they cannot be paid. \n",
+        "\n",
+        "Vehicles \n",
         "\n",
         "3. Make a plot for the number of tickets issued over time by adapting the Filled Step Chart\n",
-        "example online.\n",
+        "example online."
+      ],
+      "id": "4f80d88a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#had to find a pd.Grouper because I had too many rows in my dataset without it.\n",
+        "#found via chatgpt\n",
         "\n",
+        "grouped_date = df.groupby(pd.Grouper(key=\"issue_date\", freq=\"ME\")).count().reset_index()\n",
         "\n",
+        "alt.Chart(grouped_date).mark_area(\n",
+        "    color=\"lightblue\",\n",
+        "    interpolate='step-after',\n",
+        "    line=True\n",
+        "    ).encode(\n",
+        "    alt.X(\"issue_date\"),\n",
+        "    alt.Y(\"vehicle_make\")\n",
+        ")"
+      ],
+      "id": "abf0aab5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
         "4. Make a plot for the number of tickets issued by month and day by adapting the Annual\n",
-        "Weather Heatmap example online.\n",
-        "\n",
-        "\n",
+        "Weather Heatmap example online.\n"
+      ],
+      "id": "67f73ab1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "alt.Chart(grouped_date).mark_rect().encode(\n",
+        "    x=alt.X(\"date(issue_date)\", axis=alt.Axis(format=\"%e\", labelAngle=0)),\n",
+        "    y=alt.Y(\"month(issue_date)\", title=\"Month\"),\n",
+        "    color=alt.Color(\"max(vehicle_make)\", legend=alt.Legend(title=None)),\n",
+        "    tooltip=[\n",
+        "        alt.Tooltip(\"monthdate(date)\", title=\"Date\"),\n",
+        "        alt.Tooltip(\"max(issue_date)\", title=\"Max Temp\"),\n",
+        "    ],\n",
+        ").configure_view(step=13, strokeWidth=0).configure_axis(domain=False)"
+      ],
+      "id": "ff07b9da",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
         "5. Subset to the five most common types of violations. Make a plot for the number of\n",
-        "tickets issued over time by adapting the Lasagna Plot example online.\n",
+        "tickets issued over time by adapting the Lasagna Plot example online."
+      ],
+      "id": "a43c347f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "groupby = df.groupby(\"violation_description\").count()\n",
+        "groupby = groupby.nlargest(20, \"ticket_number\")\n",
         "\n",
+        "alt.Chart(groupby, width=300, height=200).mark_rect().encode(\n",
+        "    x=alt.X(\"issue_date\"),\n",
+        "    y=alt.Y(\"ticket_number:N\"),\n",
+        ")"
+      ],
+      "id": "d04ba961",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
         "6. Compare and contrast the plots you made for the prior three questions. What are the\n",
         "pros and cons of each plot?\n",
         "\n",
+        "I mean these are so far off from what I know you are looking for...but the bar graph is great for showing ordered list comparisons of quantitative data. The heatmap is great for creating something of a geographic effect for  quantitative data, to identify areas of frequency. And the lasagna graph incorporates a time element to that conversation.\n",
+        "\n",
         "7. Suppose that the lesson you want a reader to take away is that the enforcement of\n",
-        "violations is not evenly distributed over time? Which plot is best and why?"
+        "violations is not evenly distributed over time? Which plot is best and why?\n",
+        "Yeah I wasnt able to get that from my plots. But I would think that the lasagna plot would show that best since it is acting as a heatmap, which would indicate the number of tickets per month per year. So that would give a good sense of temporal patterns. "
       ],
-      "id": "b963f390"
+      "id": "dbcf7ecb"
     }
   ],
   "metadata": {
