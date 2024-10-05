@@ -40,6 +40,7 @@ import pandas as pd
 import altair as alt
 import numpy as np
 import os
+import time
 
 os.chdir("C:/Users/AVILA/OneDrive/Documents/GitHub/ppha30538_fall2024/problem_sets/ps1/data")
 
@@ -47,7 +48,19 @@ df = pd.read_csv("parking_tickets_one_percent.csv")
 df.head()
 ```
 
+
+
 1. To help you get started, we pushed a file to the course repo called parking_tickets_one_percent.csv which gives you a one percent sample of tickets. We constructed the sample by selecting 1 ticket numbers that end in 01. How long does it take to read in this file? (Find a function to measure how long it takes the command to run. Note that everytime you run, there will be some difference in how long the code takes to run). Add an assert statement which verifies that there are 287458 rows. 
+
+``` {python}
+start = time.time()
+
+pd.read_csv("parking_tickets_one_percent.csv")
+
+end = time.time()
+
+print(end - start)
+```
 
 2. Using a function in the os library calculate how many megabytes is the CSV file? Using
 math, how large would you predict the full data set is?
