@@ -42,7 +42,7 @@ import numpy as np
 import os
 import time
 
-os.chdir("C:/Users/AVILA/OneDrive/Documents/GitHub/ppha30538_fall2024/problem_sets/ps1/data")
+os.chdir("C:/Users/danie/OneDrive/Documents/GitHub/ppha30538_fall2024/problem_sets/ps1/data")
 
 df = pd.read_csv("parking_tickets_one_percent.csv")
 df.head()
@@ -62,21 +62,48 @@ end = time.time()
 print(end - start)
 ```
 
-2. Using a function in the os library calculate how many megabytes is the CSV file? Using
-math, how large would you predict the full data set is?
+2. Using a function in the os library calculate how many megabytes is the CSV file? 
+Using math, how large would you predict the full data set is?
 
+```{python}
+df_size = os.path.getsize("parking_tickets_one_percent.csv")
+print(df_size / 1048576)
+```
+
+``` {python}
+print(df_size*100/1048576)
+```
 
 3. The rows on the dataset are ordered or sorted by a certain column by default. Which
 column? Then, subset the dataset to the first 500 rows and write a function that tests
 if the column is ordered.
 
+The rows in the dataset are ordered by the "issue_date" column. 
+```{python}
+df_500 = df.loc[:499]
+df_500.shape
+
+df["issue_date"] = pd.to_datetime(df["issue_date"])
+
+def check():
+    for i in range(0, 500):
+        if df.loc[i, "issue_date"] > df.loc[i+1, "issue_date"]:
+            print("not ordered by issue date")
+
+check()
+```
 
 **Cleaning the data and benchmarking (15 Points)**
-
 
 1. How many tickets were issued in the data in 2017? How many tickets does that imply
 were issued in the full data in 2017? How many tickets are issued each year according
 to the ProPublica article? Do you think that there is a meaningful difference?
+```{python}
+print(f"there are {df.shape[0]} tickets in this 2017 dataset")
+print(f"this implies that there are approximately {df.shape[0]*100} tickets throughout 2017")
+print("however, there were ")
+```
+
 
 
 2. Pooling the data across all years what are the top 20 most frequent violation types?
