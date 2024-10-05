@@ -83,11 +83,12 @@ The rows in the dataset are ordered by the "issue_date" column.
 df_500 = df.loc[:499]
 df_500.shape
 
-df["issue_date"] = pd.to_datetime(df["issue_date"])
+df_datetime = df
+df_datetime["issue_date"] = pd.to_datetime(df_datetime["issue_date"])
 
 def check():
     for i in range(0, 500):
-        if df.loc[i, "issue_date"] > df.loc[i+1, "issue_date"]:
+        if df_datetime.loc[i, "issue_date"] > df_datetime.loc[i+1, "issue_date"]:
             print("not ordered by issue date")
 
 check()
@@ -100,8 +101,12 @@ were issued in the full data in 2017? How many tickets are issued each year acco
 to the ProPublica article? Do you think that there is a meaningful difference?
 ```{python}
 print(f"there are {df.shape[0]} tickets in this 2017 dataset")
+
 print(f"this implies that there are approximately {df.shape[0]*100} tickets throughout 2017")
-print("however, there were ")
+
+print("however, there were \"greater than 3 million tickets used each year\" according to the ProPublica article.")
+
+print("our resulting figures indicate that the ProPublica article is overestimating by nearly 130,000 tickets, or approximately .4%. However, note that their claim is for parking tickets, speeding ticktes, and other infractions, whereas our dataset is only for parking violations. Therefore I believe that the \"greater than 3 million\" claim is acceptable.")
 ```
 
 
@@ -110,6 +115,21 @@ print("however, there were ")
 Make a bar graph to show the frequency of these ticket types. Format the graph such
 that the violation descriptions are legible and no words are cut off.
 
+
+```{python}
+groupby = df.groupby("violation_description").count()
+groupby = groupby.nlargest(20, "ticket_number")
+groupby = groupby.reset_index()
+
+alt.Chart(groupby).mark_bar().encode(
+    alt.Y("violation_description", 
+        axis = alt.Axis(labelFontSize = 7)),
+    alt.X("ticket_number", 
+        axis = alt.Axis(labelFontSize = 7))
+)
+
+#had inspiration from chatgpt about identifying the labelfontsize and axis variables in the y and x axis
+```
 
 **Visual Encoding (15 Points)**
 
@@ -120,11 +140,38 @@ corresponds to one of the variables in the parking tickets dataset, the first co
 variable name and the second column is the variable type or types. If you argue that a
 column might be associated with than one type, explain why in writing below the table.
 
+```{python}
+columns = pd.DataFrame(df.columns)
+dtype_dict = {1:"nominal",
+              2: "ordinal",
+              3: "quantitative",
+              4: "temporal"}
+
+dtypes = [2, 2, 4, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 2, 4, 2, 1, 1, 1, 1]
+
+columns["dtypes"] = dtypes
+columns["dtypes"] = columns["dtypes"].map(dtype_dict)
+
+columns = columns.T
+columns
+
+```
+
 
 2. Compute the fraction of time that tickets issued to each vehicle make are marked as paid.
 Show the results as a bar graph. Why do you think that some vehicle makes are more
 or less likely to have paid tickets?
 
+```{python}
+df_datetime["ticket_queue_date"] = pd.to_datetime(df_datetime["ticket_queue_date"])
+paid = df_datetime[df_datetime["ticket_queue"] == "Paid"]
+paid["difference"] = paid["ticket_queue_date"] - paid["issue_date"]
+paid_gb = pd.DataFrame(paid.groupby("vehicle_make"))
+paid_gb = paid_gb.sort_values(by = "difference", ascending = False)
+paid_gb["difference"].describe()
+```
+
+Vehicles 
 
 3. Make a plot for the number of tickets issued over time by adapting the Filled Step Chart
 example online.

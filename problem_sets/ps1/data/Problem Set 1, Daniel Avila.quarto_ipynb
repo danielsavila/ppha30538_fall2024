@@ -42,7 +42,7 @@
         "\n",
         "Read in one percent sample (15 Points)\n"
       ],
-      "id": "cd6c3d53"
+      "id": "2058754f"
     },
     {
       "cell_type": "code",
@@ -52,13 +52,14 @@
         "import altair as alt\n",
         "import numpy as np\n",
         "import os\n",
+        "import time\n",
         "\n",
-        "os.chdir(\"C:/Users/AVILA/OneDrive/Documents/GitHub/ppha30538_fall2024/problem_sets/ps1/data\")\n",
+        "os.chdir(\"C:/Users/danie/OneDrive/Documents/GitHub/ppha30538_fall2024/problem_sets/ps1/data\")\n",
         "\n",
         "df = pd.read_csv(\"parking_tickets_one_percent.csv\")\n",
         "df.head()"
       ],
-      "id": "99aac391",
+      "id": "dd8ada37",
       "execution_count": null,
       "outputs": []
     },
@@ -66,30 +67,152 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "1. To help you get started, we pushed a file to the course repo called parking_tickets_one_percent.csv which gives you a one percent sample of tickets. We constructed the sample by selecting 1 ticket numbers that end in 01. How long does it take to read in this file? (Find a function to measure how long it takes the command to run. Note that everytime you run, there will be some difference in how long the code takes to run). Add an assert statement which verifies that there are 287458 rows. \n",
+        "1. To help you get started, we pushed a file to the course repo called parking_tickets_one_percent.csv which gives you a one percent sample of tickets. We constructed the sample by selecting 1 ticket numbers that end in 01. How long does it take to read in this file? (Find a function to measure how long it takes the command to run. Note that everytime you run, there will be some difference in how long the code takes to run). Add an assert statement which verifies that there are 287458 rows. \n"
+      ],
+      "id": "c668dc4b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "start = time.time()\n",
         "\n",
-        "2. Using a function in the os library calculate how many megabytes is the CSV file? Using\n",
-        "math, how large would you predict the full data set is?\n",
+        "pd.read_csv(\"parking_tickets_one_percent.csv\")\n",
         "\n",
+        "end = time.time()\n",
         "\n",
+        "print(end - start)"
+      ],
+      "id": "34b8f481",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "2. Using a function in the os library calculate how many megabytes is the CSV file? \n",
+        "Using math, how large would you predict the full data set is?\n"
+      ],
+      "id": "c87eff8b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df_size = os.path.getsize(\"parking_tickets_one_percent.csv\")\n",
+        "print(df_size / 1048576)"
+      ],
+      "id": "c9e62986",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(df_size*100/1048576)"
+      ],
+      "id": "71023617",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
         "3. The rows on the dataset are ordered or sorted by a certain column by default. Which\n",
         "column? Then, subset the dataset to the first 500 rows and write a function that tests\n",
         "if the column is ordered.\n",
         "\n",
+        "The rows in the dataset are ordered by the \"issue_date\" column. "
+      ],
+      "id": "1754e0ee"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df_500 = df.loc[:499]\n",
+        "df_500.shape\n",
         "\n",
+        "df_datetime = df\n",
+        "df_datetime[\"issue_date\"] = pd.to_datetime(df_datetime[\"issue_date\"])\n",
+        "\n",
+        "def check():\n",
+        "    for i in range(0, 500):\n",
+        "        if df_datetime.loc[i, \"issue_date\"] > df_datetime.loc[i+1, \"issue_date\"]:\n",
+        "            print(\"not ordered by issue date\")\n",
+        "\n",
+        "check()"
+      ],
+      "id": "d71341ba",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
         "**Cleaning the data and benchmarking (15 Points)**\n",
-        "\n",
         "\n",
         "1. How many tickets were issued in the data in 2017? How many tickets does that imply\n",
         "were issued in the full data in 2017? How many tickets are issued each year according\n",
-        "to the ProPublica article? Do you think that there is a meaningful difference?\n",
+        "to the ProPublica article? Do you think that there is a meaningful difference?"
+      ],
+      "id": "f27f6e8c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(f\"there are {df.shape[0]} tickets in this 2017 dataset\")\n",
         "\n",
+        "print(f\"this implies that there are approximately {df.shape[0]*100} tickets throughout 2017\")\n",
         "\n",
+        "print(\"however, there were \\\"greater than 3 million tickets used each year\\\" according to the ProPublica article.\")\n",
+        "\n",
+        "print(\"our resulting figures indicate that the ProPublica article is overestimating by nearly 130,000 tickets, or approximately .4%. However, note that their claim is for parking tickets, speeding ticktes, and other infractions, whereas our dataset is only for parking violations. Therefore I believe that the \\\"greater than 3 million\\\" claim is acceptable.\")"
+      ],
+      "id": "26c8a0de",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
         "2. Pooling the data across all years what are the top 20 most frequent violation types?\n",
         "Make a bar graph to show the frequency of these ticket types. Format the graph such\n",
-        "that the violation descriptions are legible and no words are cut off.\n",
+        "that the violation descriptions are legible and no words are cut off.\n"
+      ],
+      "id": "7c7bca5b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "groupby = df.groupby(\"violation_description\").count()\n",
+        "groupby = groupby.nlargest(20, \"ticket_number\")\n",
+        "groupby = groupby.reset_index()\n",
         "\n",
+        "alt.Chart(groupby).mark_bar().encode(\n",
+        "    alt.Y(\"violation_description:N\", \n",
+        "        axis = alt.Axis(labelFontSize = 7)),\n",
+        "    alt.X(\"ticket_number:Q\", \n",
+        "        axis = alt.Axis(labelFontSize = 7))\n",
+        ")\n",
         "\n",
+        "#had inspiration from chatgpt about identifying the labelfontsize and axis variables in the y and x axis"
+      ],
+      "id": "0b72edca",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
         "**Visual Encoding (15 Points)**\n",
         "\n",
         "1. In lecture 2, we discussed how Altair thinks about categorizing data series into four\n",
@@ -122,15 +245,14 @@
         "7. Suppose that the lesson you want a reader to take away is that the enforcement of\n",
         "violations is not evenly distributed over time? Which plot is best and why?"
       ],
-      "id": "6db23918"
+      "id": "b963f390"
     }
   ],
   "metadata": {
     "kernelspec": {
-      "name": "python3",
+      "display_name": "Python 3",
       "language": "python",
-      "display_name": "Python 3 (ipykernel)",
-      "path": "C:\\Users\\danie\\anaconda3\\share\\jupyter\\kernels\\python3"
+      "name": "python3"
     }
   },
   "nbformat": 4,
