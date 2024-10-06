@@ -232,4 +232,5 @@ I mean these are so far off from what I know you are looking for...but the bar g
 
 7. Suppose that the lesson you want a reader to take away is that the enforcement of
 violations is not evenly distributed over time? Which plot is best and why?
+
 Yeah I wasnt able to get that from my plots. But I would think that the lasagna plot would show that best since it is acting as a heatmap, which would indicate the number of tickets per month per year. So that would give a good sense of temporal patterns. 
