@@ -1,0 +1,62 @@
+---
+title: "Problem Set 2: Parking Tickets"
+author: "Daniel Avila"
+date: "10-8-24"
+format: html
+---
+
+1. “This submission is my work alone and complies with the 30538 integrity policy.” Add
+ your initials to indicate your agreement: **DA**
+ 2. “I have uploaded the names of anyone I worked with on the problem set here” **DA**
+ (2 point)
+ 3. Late coins used this pset: **0** Late coins left after submission: **3**
+ 4. Knit your ps2.qmd as an html document and print to a pdf to make ps2.pdf.
+ • The PDF should not be more than 25 pages. Use head() and re-size figures when
+ appropriate.
+ 5. Push ps2.qmd and ps2.pdf to your github repo. It is fine to use Github Desktop.
+ 6. Submit ps2.pdf via Gradescope (8 points)
+ 7. Tag your submission in Gradescope
+
+```{python}
+import pandas as pd
+import numpy as np
+import os
+import altair as alt
+
+path = "c:/Users/danie/Documents/GitHub/ppha30538_fall2024/problem_sets/ps2/data"
+os.chdir(path)
+
+df = pd.read_csv("parking_tickets_one_percent.csv")
+
+```
+
+
+ **Data cleaning continued**
+ 1. . For each column, how many rows are NA? Write a function which returns a two column data frame where each row is a variable, the first column of the data frame is the name of each variable, and the second column of the data frame is the number of times thatthe column is NA. Test your function. Then, report the results applied to the parking tickets data frame. There are several ways to do this, but we haven’t covered them yet in class, so you will need to work independently to set this up.
+
+ ```{python}
+df.head()
+ ```
+
+```{python}
+def data_cleaning(data):
+    columns = data.columns
+    na_values = []
+
+    for i in range(len(data.columns)):
+        series = data.iloc[:, i].isna()
+        true = len(series[series == True])
+        na_values.append(true)
+
+    output = pd.DataFrame(na_values, columns).reset_index()
+    output.columns = ["column names", "NA values"]
+    return output
+
+data_cleaning(df)
+```
+
+ 2. Three variables are missing much more frequently than the others. Why? (Hint: look at some rows and read the data dictionary written by ProPublica)
+
+ 3. Some of the other articles on the propublica website discuss an increase in the dollar amount of the ticket for not having a city sticker. What was the old violation code and what is the new violation code?
+
+ 4. How much was the cost of an initial offense under each code? (You can ignore the ticket for a missing city sticker on vehicles over 16,000 pounds.)
