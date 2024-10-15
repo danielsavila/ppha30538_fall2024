@@ -156,7 +156,7 @@ alt.Chart(movies_url).mark_bar().encode(
 )
 ```
 
-Discussion question -- Why is "how to sorting the order of bars" such a great problem to submit to ChatGPT?
+Discussion question -- Why is "how to sort the order of bars" such a great problem to submit to ChatGPT?
 
 
 ## Interquartile range
@@ -205,6 +205,13 @@ Hint: if you aren't sure how to aggregate the x-variable, go back to the first v
 2. *Pair* -- compare your results with person next to you
 
 3. *Share* -- discuss results as a class
+
+```{python}
+alt.Chart(movies_url).mark_point().encode(
+    alt.X('Release_Date:T'),
+    alt.Y('US_Gross:Q')
+)
+```
 
 
 ## Aggregation: summary

@@ -22,6 +22,7 @@ import pandas as pd
 import numpy as np
 import os
 import altair as alt
+import datetime as dt
 
 path = "c:/Users/danie/Documents/GitHub/ppha30538_fall2024/problem_sets/ps2/data"
 os.chdir(path)
@@ -57,6 +58,101 @@ data_cleaning(df)
 
  2. Three variables are missing much more frequently than the others. Why? (Hint: look at some rows and read the data dictionary written by ProPublica)
 
+The three variables that are displaying the most missingness are 1) zipcode, 2) notice level, and 3) hearing_disposition. 
+
+```{python}
+series1 = df["zipcode"].isna()
+series1 = series1.loc[series1 == True].reset_index()
+small_list1 = list(series1.loc[:, "index"])
+one = df.loc[small_list1]
+v_one = one["violation_description"].value_counts()
+
+series2 = df["notice_level"].isna()
+series2 = series2.loc[series2 == True].reset_index()
+small_list2 = list(series2.loc[:, "index"])
+two = df.loc[small_list2]
+v_two = two["violation_description"].value_counts()
+
+series3 = df["hearing_disposition"].isna()
+series3 = series3.loc[series3 == True].reset_index()
+small_list3 = list(series3.loc[:, "index"])
+three = df.loc[small_list3]
+v_three = three["violation_description"].value_counts()
+```
+
+The zipcode variable indicates the zipcode associated with the vehicle registration. This is an assumption, but I would guess that if the vehicle does not have an up to date registration. Therefore that would explain the lack of zipcode.
+According to the ProPublica article for notice_level, if there is no data, then that would indicate that no notice was sent to the vehicle owner.
+For the hearing_disposition, if the field is blank, then that would indicate that the ticket was not contested. 
+
+
  3. Some of the other articles on the propublica website discuss an increase in the dollar amount of the ticket for not having a city sticker. What was the old violation code and what is the new violation code?
 
+```{python}
+#identifying what were the old codes by checking the value amounts
+#in one of the articles, they mentioned that one of the value amounts was raised to 200 dollars. 
+sticker = df[(df["violation_description"] == "NO CITY STICKER OR IMPROPER DISPLAY") | (df["violation_description"] == "NO CITY STICKER VEHICLE UNDER/EQUAL TO 16,000 LBS.")]
+sticker["violation_code"].value_counts()
+```
+
+The old code was **0964125**, and the new code was designated as **0964125B**
+
  4. How much was the cost of an initial offense under each code? (You can ignore the ticket for a missing city sticker on vehicles over 16,000 pounds.)
+```{python}
+sticker["fine_level1_amount"].value_counts()
+```
+
+The cost of an initial offense was $120, and was then raised to $200.
+
+**Revenue increase from “missing city sticker” tickets (20 Points)**
+
+1. Using pandas, create a new value for violation codes which combines the two codes that
+you found in the previous question. Again using pandas, collapse the data to capture
+the number of missing city sticker tickets by month. Then, using Altair, plot the number
+of tickets over time.
+
+```{python}
+#replacing values
+new_code = "111111"
+new_df = df
+new_df = new_df.replace(("0964125B", "0964125"), new_code)
+
+#collapsing data
+missing_stickers = new_df[new_df["violation_code"] == new_code]
+missing_stickers.loc[:,"issue_date"] = pd.to_datetime(missing_stickers["issue_date"])
+
+
+sample = missing_stickers.sample(1000)
+alt.Chart(sample).mark_bar(
+).transform_aggregate(
+    groupby = ["issue_date"],
+    count = "count()"
+).encode(
+    alt.X("year_month:T"),
+    alt.Y("count:Q")
+)
+```
+
+2. Suppose that your reader wants to be able to use the plot to deduce when the price
+increase occurred. Add frequent or custom date labels on the x-axis of your plot such
+that the date of the price increase is readily apparent. We haven’t covered Altair’s
+date labeling features in class so you’ll first need to find the relevant help page in the
+documentation. Which help page did you use?
+
+
+3. The City Clerk said the price increase would raise revenue by $16 million per year. For
+now, ignore the fact that many tickets are not paid and assume that the number of tickets
+issued is the same before and after the policy change. Using only the data available in
+the calendar year prior to the increase, how much of a revenue increase should they have
+projected? Remember that you are working with a one percent sample of the data.
+Assume that the number of tickets of this type issued afterward would be constant and
+you can assume that there are no late fees or collection fees, so a ticket is either paid at
+its face value or is never paid.
+
+4. What happened to repayment rates (percentage of tickets issued that had payments
+made) on this type of ticket in the calendar year after the price increase went into effect?
+Suppose for a moment that the number of tickets issued was unchanged after the price
+increase. Using the new repayment rates in the year after the price increase occurred,
+what would the change in revenue have been? 
+
+5. Make a plot with the repayment rates on “missing city sticker” tickets and a vertical line
+at when the new policy was introduced. Interpret.
